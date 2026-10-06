@@ -22,10 +22,11 @@ SOFTWARE.
 
 ---
 
-This licence covers the PLUGIN CODE in this repository (everything under src/,
-test/, tools/, and the prose in this repository's own documentation).
+上面是 MIT 许可证的**原始英文文本**，一字未改——许可证正文必须保持原文，翻译不具法律效力。
 
-The character artwork under assets/ is NOT covered by it: those images are
-third-party works redistributed with attribution. See THIRD-PARTY-NOTICES.md
-for their provenance, their upstream terms, and how to verify that the copies
-here are unmodified.
+本许可证覆盖本仓库的**插件代码**：`src/`、`test/`、`tools/` 下的全部内容，
+以及本仓库自己撰写的文档文字。
+
+`assets/` 下的**角色素材不在覆盖范围内**。那些图片是第三方作品，在注明来源的前提下再分发。
+它们的来源、上游各自的条款、以及如何核验这里的副本未被改动，
+见 [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md)。

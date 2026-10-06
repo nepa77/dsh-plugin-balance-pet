@@ -18,10 +18,10 @@ browser draws them, so the visual result can be inspected without a screenshot o
 the Web UI.
 
 The pet part is a faithful port of `renderPet` / `drawTablet` / `drawFloating` in
-`packages/dsh-plugin-balance-pet/src/client.js`: the same layout, the same measured
-tablet corners, the same affine mapping, the same font sizes and the same
-red-flash compositing. The menu and pill parts reproduce the same structure, order
-and CSS metrics, drawn with Pillow because the real ones are DOM.
+`src/client.js`: the same layout, the same measured tablet corners, the same affine
+mapping, the same font sizes and the same red-flash compositing. The menu part
+reproduces the same structure, order and CSS metrics, drawn with Pillow because the real
+one is DOM.
 
 Run:  python tools/render-pet-preview.py
       python tools/render-pet-preview.py --corners
@@ -572,7 +572,7 @@ def main():
 
     # The two reactions that were kept.
     made.append(render("expression-22.webp", ART_DEEPSEEK, 150, balance, True, 1.0,
-                       [("-0.01", "down", 0.25)], os.path.join(OUT, "hit-drop.png")))
+                       [("-0.01", "down", 0.25)], os.path.join(OUT, "drop.png")))
     made.append(render("expression-11.webp", ART_DEEPSEEK, 150, balance + 200, True, 0.0,
                        [("+2.00", "up", 0.25)], os.path.join(OUT, "topup.png"), ring=0.35))
 

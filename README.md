@@ -1,70 +1,56 @@
 # dsh-plugin-balance-pet
 
-A **balance pet for DeepSeek Harness**: a frame-wide companion inside the Harness Web
-UI that watches your balance. Every cent spent plays a red flash, a shake and a floating
-`-0.01`; a top-up shows immediately with the credited amount.
+**DeepSeek Harness 的余额桌宠**：Harness 网页界面里的一只常驻挂件，帮你盯着余额。每花掉一分钱就红闪、
+震动，并飘出一个 `-0.01`；充值立刻显示到账金额。
 
-Ported from [VKmich16/VK-1](https://github.com/VKmich16/VK-1) — the macOS
-`dsh-balance-pet-macos` 1.3.1 for the four appearances and the offline pose, and the
-**D-16BVM "DSH余额挂件现代化改进型"** for the four differential expressions. **Not** a
-standalone application: there is no `.app`, no tray icon, no desktop window and no second
-process.
+素材来自 [VKmich16/VK-1](https://github.com/VKmich16/VK-1)：macOS 版 `dsh-balance-pet-macos` 1.3.1
+提供四个外观和离线抱盆姿势，**D-16BVM「DSH余额挂件现代化改进型」** 提供四张差分表情。
 
-**0.3.1** is a maintenance release: dead code removed, one fake doctor check replaced with a
-real one, and the artwork resolved once per frame instead of twice. No behaviour change.
-**0.3.0** added the 抱盆大肥鱼 appearance, the 1-second hold on the 紧张 face, and hiding /
-restoring the pet. **0.2.0** moved the whole settings surface onto the pet's right-click
-menu (there is no Settings page any more) and split the artwork into two axes: **外观**
-(five characters) and **表情** (four differential expressions).
+它**不是**独立应用：没有 `.app`、没有托盘图标、没有桌面窗口、没有第二个进程。
 
-## The right-click menu is the settings
+## 右键菜单就是设置面板
 
-Right-click the pet (or Control-click). Everything is there:
+**右键点桌宠**（Mac 上是 Control + 点击）。所有设置都在里面：
 
-![The pet's menu](docs/previews/menu.webp)
+![桌宠的菜单](docs/previews/menu.webp)
 
-| Entry | What it does |
+| 菜单项 | 作用 |
 |---|---|
-| **status line** | The current reading and where it came from, e.g. `¥ 25.91 · DSH 账号`, or the reason it is offline. |
-| **立即刷新余额** | Forces one upstream query now, skipping the interval and the failure backoff. |
-| **隐藏桌宠** | Hides the pet and hands the toggle over to the sidebar foot. Only offered while that entry is available. |
-| **显示** | group heading |
-| ↳ **尺寸** | 小 110 / 中 150 / 大 210 / **自定义…** (60–420 px, typed into a small dialog). The old 特大 preset is gone; 自定义 replaces it. |
-| ↳ **外观** | The five characters: 蓝色大肥鱼 / 抱盆大肥鱼 / GPT龙娘 / 大小姐Claude / 北美猫娘Gemini. |
-| ↳ **表情** | The four 差分表情 (differential expressions): 开心 / 傲娇 / 冷脸 / 紧张. Enabled only for 蓝色大肥鱼, which is the only character with differential art. |
-| ↳ **吸附** | A toggle. On (default): releasing the pet in 0.16 s snaps it to the bottom-left corner. Switching it on also moves the pet there immediately. Off: it stays where you drop it. |
-| **余额** | group heading |
-| ↳ **余额来源** | 自动 / 仅 DSH 账号 / 仅 API Key — see below. |
-| **设置 API Key…** | Stores a key inside a small dialog (see below). |
-| **清除已保存的 Key** | Appears only when a key is stored. |
-| ↳ **刷新间隔** | 10 秒 / 30 秒 / 1 分钟 / 5 分钟. The real floor and ceiling (10–300 s) are enforced by the Host. |
+| **状态行** | 当前读数和它的来源，例如 `¥ 25.91 · DSH 账号`；连不上时显示原因。 |
+| **立即刷新余额** | 立刻向上游查一次，跳过刷新间隔和失败退避。 |
+| **隐藏桌宠** | 藏起桌宠，把开关交给侧边栏底部。只有在那个入口可用时才会显示这一项。 |
+| **显示** | 分组标题 |
+| ↳ **尺寸** | 小 110 / 中 150 / 大 210 / **自定义…**（60–420 px，在小对话框里输入）。 |
+| ↳ **外观** | 五个角色：蓝色大肥鱼 / 抱盆大肥鱼 / GPT龙娘 / 大小姐Claude / 北美猫娘Gemini。 |
+| ↳ **表情** | 四张差分表情：开心 / 傲娇 / 冷脸 / 紧张。**只有蓝色大肥鱼能选**，因为只有她有差分素材。 |
+| ↳ **吸附** | 开关。打开（默认）：松手后 0.16 秒吸附到左下角；刚打开时也会立刻移过去。关闭：松手后就停在你放的位置。 |
+| **余额** | 分组标题 |
+| ↳ **余额来源** | 自动 / 仅 DSH 账号 / 仅 API Key，见下文。 |
+| **设置 API Key…** | 在小对话框里存一个 Key，见下文。 |
+| **清除已保存的 Key** | 只在已经存过 Key 时出现。 |
+| ↳ **刷新间隔** | 10 秒 / 30 秒 / 1 分钟 / 5 分钟。真正的上下限（10–300 秒）由宿主半边强制。 |
 
-The menu is a normal grouped menu: dim non-interactive group headers, icons, a `›`
-chevron on submenus, a ✓ on the selected choice, and a right-floating value so the
-current setting is visible without opening the submenu. Escape or any click outside
-closes it.
+这是一个标准的分组菜单：分组标题变灰且不可点、带图标、子菜单有 `›` 箭头、选中的项有 ✓、
+右侧浮着当前值（不用展开子菜单就知道现在是什么）。按 Escape 或点别处关闭。
 
-## Hiding the pet, and getting it back
+## 隐藏桌宠与还原
 
-The two controls are **mutually exclusive** — at any moment exactly one of them exists:
+两个开关是**互斥**的——任何时刻只会存在其中一个：
 
-| State | What is on screen |
+| 状态 | 屏幕上有什么 |
 |---|---|
-| Pet shown | The pet, and **隐藏桌宠** inside its right-click menu (directly under 立即刷新余额). The sidebar foot shows nothing. |
-| Pet hidden | Nothing where the pet was. A **DSH 余额桌宠** entry appears beside Settings at the sidebar foot; clicking it brings the pet back. |
+| 桌宠显示中 | 桌宠本体，以及右键菜单里的 **隐藏桌宠**（就在 `立即刷新余额` 下面）。侧边栏底部什么都不显示。 |
+| 桌宠已隐藏 | 桌宠原位没有任何东西。侧边栏底部「设置」旁边出现 **DSH 余额桌宠**，点它把桌宠叫回来。 |
 
-So there is no floating "show" button to sit on top of your account row, and no sidebar
-entry taking up room while the pet is already on screen.
+所以不会有浮动的「显示」按钮压在账号栏上面，也不会在桌宠已经显示时还占着侧边栏的位置。
 
-Two consequences worth knowing:
+有两点值得知道：
 
-- The sidebar entry is the **only** way back, so is a hidden pet a dead end if that slot
-  ever stops resolving? No: the entry announces that it mounted (`pet.sidebarReady`), and
-  the menu's **隐藏桌宠** stays **disabled** — with a one-line explanation — until it has.
-  A DSH build with a broken sidebar slot therefore cannot strand the pet.
-- Hiding is a saved preference, so it survives a page reload. If you ever need to undo it
-  without the entry (for example after switching to an incompatible DSH), clear it in the
-  browser console:
+- 侧边栏那个入口是**唯一**的退路，那万一它失效了，藏起来的桌宠是不是就找不回来了？不会。
+  入口挂载时会向上报告（`pet.sidebarReady`），在它报告之前菜单里的 **隐藏桌宠** 是**禁用**的，
+  并且写明原因。所以侧边栏槽位坏掉的 DSH 版本不会让桌宠被永久藏起来。
+- 隐藏状态是**保存的偏好**，刷新页面依然有效。万不得已要绕过入口解除（例如换到了不兼容的 DSH），
+  在浏览器控制台里执行：
 
   ```js
   var k = 'dsh-plugin-balance-pet/preferences'
@@ -76,293 +62,257 @@ Two consequences worth knowing:
 
 ## 外观 vs 表情
 
-They are two independent axes:
+这是两个互相独立的维度：
 
-| Axis | Choices | Notes |
+| 维度 | 选项 | 说明 |
 |---|---|---|
-| **外观** | **5** characters | 蓝色大肥鱼 (the default) is served by the differential set below; 抱盆大肥鱼, GPT龙娘, 大小姐Claude and 北美猫娘Gemini are single 1536 × 1024 images, each with its own measured tablet corners. |
-| **表情** | 4 moods of 蓝色大肥鱼 | 开心（默认）/ 傲娇 / 冷脸 / 紧张 — the D-16BVM `expression_11/12/21/22` art (1024 × 1024). |
+| **外观** | **5** 个角色 | 蓝色大肥鱼（默认）由下面的差分素材提供；抱盆大肥鱼、GPT龙娘、大小姐Claude、北美猫娘Gemini 各是一张 1536 × 1024 的图，平板坐标各自单独量过。 |
+| **表情** | 蓝色大肥鱼的 4 种心情 | 开心（默认）/ 傲娇 / 冷脸 / 紧张，来自 D-16BVM 的 `expression_11/12/21/22`（1024 × 1024）。 |
 
-![The four expressions](docs/previews/expressions.webp)
+![四张差分表情](docs/previews/expressions.webp)
 
-**The expression is not only decorative:**
+**表情不只是装饰：**
 
-| State | Face |
+| 状态 | 表情 |
 |---|---|
-| Money is draining (`pendingSteps > 0` or a hit is playing) | **紧张** — automatically, whatever resting face you chose |
-| The last cent has landed | **紧张** stays on for **1 more second**, then relaxes |
-| A top-up just landed (0.9 s) | **开心** |
-| Everything else | the face you chose in 表情 |
+| 正在扣费（`pendingSteps > 0`，或有一次红闪正在播） | **紧张**——自动切换，不管你手选的是哪张 |
+| 最后一分钱落地了 | **紧张**再保持 **1 秒**，然后放松 |
+| 刚充值到账（0.9 秒） | **开心** |
+| 其他所有时候 | 你在 `表情` 里选的那张 |
 
-So a run of deductions shows her wincing the whole time, holding the wince for a beat after
-the money stops moving, and only then relaxing; a recharge gets a smile. Pick 傲娇 as the
-resting face and a drop still shows 紧张 — that is the point of having four.
+所以连续扣费时她会全程皱着眉，钱停住之后再保持一拍才放松；充值则会给一个笑。
+把手动表情设成「傲娇」，掉钱时依然会切到「紧张」——这正是有四张的意义。
 
-### 抱盆大肥鱼, and the automatic offline pose
+### 抱盆大肥鱼，以及自动的离线姿势
 
-**抱盆大肥鱼** is the pose holding a basin. It has no tablet, so choosing it shows the
-character with **no balance title, amount, status dot or floating amounts** — a "just the
-pet" mode.
+**抱盆大肥鱼**就是拿着盆子的那个姿势。她没有平板，所以选她时**没有余额标题、金额、状态点和飘字**——
+一个「只剩桌宠」的模式。
 
-The same pose is also what **蓝色大肥鱼** falls back to automatically whenever there is no
-reading at all: no DSH account, no API key, still connecting, or a failed query. As soon as
-a reading succeeds she returns to the tablet with the balance on it. The other three
-appearances keep their tablet and show `--` instead, exactly as the desktop original does.
+同一个姿势也是 **蓝色大肥鱼** 在**完全没有读数**时自动回退到的样子：没登录 DSH 账号、没有 API Key、
+正在连接、或者查询失败。一旦读数成功，她会自动回到有余额的平板图。另外三个外观则保留平板并显示 `--`，
+和桌面原版的行为一致。
 
-## Two framings: 宽构图 vs the current one
+## 两种构图：宽构图 vs 当前构图
 
-Both are the same character. The difference is how much of her is in the picture, and
-therefore how big the tablet — hence the balance — is:
+两张是同一个角色，区别是**画面里装了多少她**，因此决定了平板——也就是余额——有多大：
 
-![Wide versus square framing](docs/previews/wide-vs-square.webp)
+![宽构图与当前构图对比](docs/previews/wide-vs-square.webp)
 
-| | `外观/sprite.png` (宽构图) | the differential set (current) |
+| | `外观/sprite.png`（宽构图） | 差分素材（当前使用） |
 |---|---|---|
-| Source | macOS `dsh-balance-pet-macos` 1.3.1 | D-16BVM `expression_11…22` |
-| Image | 1536 × 1024 (3:2) | 1024 × 1024 (1:1) |
-| Framing | Wide: the whole character, whale tail included on the left | Closer crop: head, shoulders and a large tablet |
-| Pet box at 中 (150 pt) | 225 × 233 | 155 × 233 |
-| Balance on the tablet | Small — the tablet is ~49 pt wide | Much bigger and comfortable to read |
+| 来源 | macOS `dsh-balance-pet-macos` 1.3.1 | D-16BVM `expression_11…22` |
+| 图片 | 1536 × 1024（3:2） | 1024 × 1024（1:1） |
+| 构图 | 宽：整只角色，鲸尾伸到左边 | 近景：头、肩和一块大平板 |
+| 「中」(150 pt) 时的盒子 | 225 × 233 | 155 × 233 |
+| 平板上的余额 | 小——平板只有约 49 pt 宽 | 大得多，看着不费劲 |
 
-**蓝色大肥鱼 now uses the differential set**, because that is where the four 表情 live:
-all four images share one framing, so switching mood never makes her jump, and the bigger
-tablet makes the readout legible at every size preset. That is why `外观/sprite.png` is
-verified by `tools/make-assets.py` but not shipped.
+**蓝色大肥鱼现在用差分素材**，因为四张 `表情` 都在那里：四张图共享同一个构图，换心情不会让她跳一下，
+而且平板更大，余额在任何尺寸档都看得清。这就是 `外观/sprite.png` 被 `tools/make-assets.py` 校验、
+却**不**随包发布的原因。
 
-The cost is the wide composition: no whale tail, and a narrower box. Using the wide
-framing as 蓝色大肥鱼's resting look would mean giving up the 表情 axis for that appearance
-(one image, no differential switching), because mixing the two framings makes every mood
-change look like a jump cut.
+代价是丢掉了宽构图：看不到鲸尾，盒子也更窄。要让蓝色大肥鱼用宽构图当常驻外观，就意味着**放弃她的
+`表情` 这一维度**（只剩一张图，不能换表情），因为两套构图混用会让每次换心情都像跳切。
 
-## Behaviour
+## 行为
 
-| Situation | What happens |
+| 情况 | 会发生什么 |
 |---|---|
-| Balance drops by N cents (N ≤ 400) | One step per cent, one step every **0.2 s**: red flash, shake, and a red `-0.01` floating up and fading over 0.95 s — with the **紧张** face on throughout and for one second after. |
-| Balance drops by more than 400 cents | The display **aligns** to the new balance instead of playing minutes of queued animation. |
-| A poll repeats the same balance | Nothing replays: the pending count is re-derived from the lagging display, so already-animated cents are never animated twice. |
-| Balance goes up | The new balance shows **immediately**, a green ring pulses for 0.9 s, and the credited amount floats up — computed from the **two consecutive server readings**, not from the lagging display. |
-| A page reloads, or 余额来源 changes | The first reading aligns; there is nothing to animate *from*, and a difference between two different accounts must never be played as spending. |
-| A tab is in the background, or a frame is long | Upstream traffic pauses, and one long frame can fire at most one step, so waking up never produces a burst. |
-| No reading at all | 蓝色大肥鱼 shows the 抱盆大肥鱼 pose; the menu's status line says why. The other three keep their tablet with `--`. |
-| The pet is grabbed on a transparent corner | The click reaches the app underneath — input is claimed only where the sprite has a pixel. |
+| 余额掉了 N 分（N ≤ 400） | 每分钱一步，每 **0.2 秒**一步：红闪、震动，一个红色 `-0.01` 向上飘并在 0.95 秒内淡出——全程是 **紧张** 表情，结束后再多保持一秒。 |
+| 余额掉了超过 400 分 | 显示**直接对齐**到新余额，而不是把几分钟的动画排队播完。 |
+| 轮询拿到和上次相同的余额 | 什么都不重播：待播步数是从「落后的显示值」重新算出来的，已经播过的分钱不会被播第二次。 |
+| 余额上升 | 新余额**立刻**显示，绿色圆环闪 0.9 秒，到账金额向上飘——金额由**连续两次服务器读数**算出来，不是拿落后的显示值算的。 |
+| 页面刷新，或 `余额来源` 被改过 | 第一次读数直接对齐；此时没有可以「从哪开始动画」的基准，而且两个不同账号之间的差额绝不能被当成消费播出来。 |
+| 标签页在后台，或某帧特别长 | 上游请求暂停；一帧再长也最多触发一步，所以切回来不会突然爆一串动画。 |
+| 完全没有读数 | 蓝色大肥鱼显示抱盆姿势，菜单的状态行写明原因。另外三个外观保留平板并显示 `--`。 |
+| 抓到桌宠的透明边角 | 点击会落到下面真正的应用上——只有在素材有像素的地方才会抢输入。 |
 
-![A drop](docs/previews/hit-drop.webp)
+![一次扣费](docs/previews/drop.webp)
 
-The drop animation runs only when the Host reports a real balance change.
+扣费动画只在宿主报告**真实**余额变化时运行。
 
-## Where the balance comes from
+## 余额来自哪里
 
-| Source | How |
+| 来源 | 怎么读 |
 |---|---|
-| **DSH 账号** | `ctx.get('deepseekAccount').getBalance(...)` — the same Host-only seam DSH's own account page uses. It owns the grant, the Platform origin, the `x-dsh-auth-token` header and the response envelope, so this plugin never touches your credentials and never sees a token. The reading is `value` + `bonusWallets`, CNY only; USD never masquerades as ¥. |
-| **API Key（桌宠设置）** | A key you save from **设置 API Key…**, stored at `<dshHome>/balance-pet/apikey.txt` with mode 0600 (written to a temp file and renamed, so a failure leaves the old key intact). Queried against `https://api.deepseek.com/user/balance`. |
-| **DEEPSEEK_API_KEY（~/.dsh/.credentials.yaml）** | The key DSH's own model settings write. Used when no key was saved in the pet. |
+| **DSH 账号** | `ctx.get('deepseekAccount').getBalance(...)`——和 DSH 自己的账号页面用的是同一个**仅宿主可用**的接口。授权、Platform 域名、`x-dsh-auth-token` 头和响应信封都由它管，所以本插件**从不接触你的凭证，也看不到 token**。读数取 `value` 加 `bonusWallets`，只认人民币；美元不会被当成 ¥。 |
+| **API Key（桌宠设置）** | 你在 **设置 API Key…** 里存的 Key，存在 `<dshHome>/balance-pet/apikey.txt`，权限 0600（先写临时文件再改名，所以失败时旧 Key 完好）。查询 `https://api.deepseek.com/user/balance`。 |
+| **DEEPSEEK_API_KEY（~/.dsh/.credentials.yaml）** | DSH 自己的模型设置写下的那个 Key。桌宠里没存 Key 时用它。 |
 
-**余额来源 decides which one is used, because the right answer is not always obvious:**
+**`余额来源` 决定用哪一个，因为正确答案并不总是显然的：**
 
-| Choice | Behaviour |
+| 选项 | 行为 |
 |---|---|
-| **自动** (default) | The DSH account first. If it is **signed out**, fall through to a key. If the account query genuinely **fails**, report that failure — do not quietly swap in a key's balance, because when a grant is stored the account balance *is* the balance and a silent swap would disagree with DSH's own account page. |
-| **仅 DSH 账号** | Never uses a key. A signed-out account is reported as such. |
-| **仅 API Key** | Never touches the account seam at all (asserted by a test and by the live verification script). |
+| **自动**（默认） | 优先用 DSH 账号。如果账号**未登录**，才退到 Key。如果账号查询**真的失败**，就如实报这个失败——不会偷偷换成 Key 的余额，因为存了授权时**账号余额就是余额**，偷偷换掉会和 DSH 自己的账号页面对不上。 |
+| **仅 DSH 账号** | 永不使用 Key。未登录就报未登录。 |
+| **仅 API Key** | 完全不碰账号接口（有单测和实时脚本各断言一次）。 |
 
-That choice exists precisely because "I saved an API key and nothing changed" is the
-confusing case: signed in with an account, the key is *not* the source unless 余额来源 is
-set to it.
+这个选项存在的理由，正是「我存了 API Key 却什么都没变」这个容易困惑的情况：已经登录账号时，
+Key **不是**来源，除非把 `余额来源` 设成它。
 
-> **Why the key field is not redundant with DSH's own:** DSH keeps its key for *inference*
-> under Settings → Models. The pet only needs a credential when it must read a **balance**,
-> which is a different endpoint. Saving the key here means the pet keeps working when the
-> account is not signed in, without touching DSH's credential file.
+> **为什么这个 Key 字段和 DSH 自己的不重复：** DSH 把 Key 留在「设置 → 模型」下用于**推理**。
+> 桌宠只在需要读**余额**时才要凭证，那是另一个端点。在这里存 Key 意味着账号未登录时桌宠照样能用，
+> 而且不用碰 DSH 的凭证文件。
 
-Money is never handled as a float: `decimalToCents` shifts the decimal point inside a
-digit string and rounds half-up with `BigInt`, so `0.1 + 0.2` is exactly 30 cents. Every
-key and token is validated as a single printable line before use, and the Host never
-returns credential material to the page — only a `apiKeyStored: true/false` flag.
+金额**从不经过浮点**：`decimalToCents` 在数字串内部移动小数点并用 `BigInt` 四舍五入，
+所以 `0.1 + 0.2` 精确等于 30 分。每个 Key 和 token 使用前都会校验成「单行、可打印」，
+宿主半边也从不把凭证内容回传页面——只回一个 `apiKeyStored: true/false` 标志。
 
-## How the two halves talk
+## 两半之间怎么通信
 
-The browser cannot reach `deepseekAccount` (Host-only), and this package ships no build
-step for DSH's generated Remote artifacts, so the halves speak over ordinary HTTP routes
-on `ctx.webServer`:
+浏览器够不到 `deepseekAccount`（仅宿主可用），而本包不为 DSH 的生成式 Remote 产物提供构建步骤，
+所以两半通过 `ctx.webServer` 上的普通 HTTP 路由对话：
 
-| Route | Purpose |
+| 路由 | 用途 |
 |---|---|
-| `GET …/doctor` | Every seam's live verdict, the last reading, and the browser's self-report. |
-| `GET …/state?interval=&source=&report=` | The current reading; also the browser's ≈1 Hz heartbeat and self-report. |
-| `POST …/refresh` | Force one upstream query, bypassing the interval and the backoff. |
-| `POST …/apikey` / `DELETE …/apikey` | Store or clear the pet's own key. |
-| `GET …/asset?file=` | One artwork file, matched against a filename allowlist. |
+| `GET …/doctor` | 每个接口的实时体检结果、最后一次读数、以及浏览器半边自己报告画了什么。 |
+| `GET …/state?interval=&source=&report=` | 当前读数；同时也是浏览器约 1 Hz 的心跳和自报。 |
+| `POST …/refresh` | 强制向上游查一次，跳过刷新间隔和退避。 |
+| `POST …/apikey` / `DELETE …/apikey` | 保存或清除桌宠自己的 Key。 |
+| `GET …/asset?file=` | 取一张素材，按文件名白名单匹配。 |
 
-Every JSON route requires the `x-dsh-plugin-balance-pet` request header: a cross-origin
-page cannot set a custom header without a CORS preflight, and no route answers one. The
-asset route is intentionally open — `<img>` and CSS loads cannot set headers, and the
-artwork is not a secret.
+**所有 JSON 路由都要求 `x-dsh-plugin-balance-pet` 请求头**：跨源页面想设自定义头就必须先过 CORS 预检，
+而没有任何一条路由会回应预检。素材路由是**故意开放**的——`<img>` 和 CSS 加载设不了请求头，
+而素材本身不是秘密。
 
-**No browser open ⇒ no upstream traffic at all.** The Host polls only when a page asks, at
-most once per interval, at most one request in flight, with doubling backoff after
-failures (capped at 5 minutes).
+**没有页面打开就完全不产生上游流量。** 宿主只在有页面请求时才轮询，每个间隔最多一次，
+同一时刻最多一个请求在飞，失败后指数退避（上限 5 分钟）。
 
-## Install
+## 安装
 
-```
-plugin_manager install_bundle  →  <path to this package>
-```
+**从 Release 装（推荐）。** 每个 Release 带两个自包含的包，内容都由 `package.json` 的 `files` 列表决定：
 
-or, equivalently:
+| 包 | 用途 |
+|---|---|
+| `dsh-plugin-balance-pet-<version>.zip` | 解压成一个目录，最省事。 |
+| `dsh-plugin-balance-pet-<version>.tgz` | npm/pnpm 的 tarball，想只拷一个文件就用它。 |
+
+先把目录放到一个**长期不变**的位置——DSH 的 profile 记录的是**绝对路径**，以后移动就得重装。然后：
 
 ```sh
-dsh plugin --profile desktop add <path to this package>
-```
-
-**Restart DSH after installing or updating.** The Client half hot-reloads, but a plugin's
-**Host half is not hot reloaded** — and any release that adds or renames artwork files will
-leave the old Host answering the old filename allowlist while the new Client asks for the
-new names. The pet looks broken (grey boxes) in that window. Confirm with
-`GET /dsh-plugin-balance-pet/doctor`: `version` must read the version you installed.
-
-## Installing
-
-**From a release.** Each release carries two self-contained artifacts, both driven by the
-manifest's `files` list:
-
-| Artifact | Use |
-|---|---|
-| `dsh-plugin-balance-pet-<version>.zip` | Unzips to one folder — the simplest route. |
-| `dsh-plugin-balance-pet-<version>.tgz` | An npm/pnpm tarball, if you prefer one file. |
-
-Put the folder somewhere **permanent** first — DSH profiles record an **absolute** path, so
-moving it later means reinstalling. Then:
-
-```sh
-# A) point the plugin manager (or `dsh plugin`) at the folder
+# A) 把插件管理器（或 dsh plugin）指向那个目录
 dsh plugin --profile desktop add /path/to/dsh-plugin-balance-pet
 
-# B) or install straight from the tarball
-dsh plugin --profile desktop add /path/to/dsh-plugin-balance-pet-0.4.2.tgz
+# B) 或者直接从 tarball 装
+dsh plugin --profile desktop add /path/to/dsh-plugin-balance-pet-0.4.3.tgz
 ```
 
-In a DSH session the same thing is one line: *"install*
-`/path/to/dsh-plugin-balance-pet` *into the desktop profile with*
-`plugin_manager install_bundle`*, *then show me its doctor route."*
+在 DSH 会话里也可以一句话搞定：*「把 `/path/to/dsh-plugin-balance-pet` 用*
+`plugin_manager install_bundle` *装进 `desktop` profile，然后把它 `doctor` 路由的结果给我看。」*
 
-**From a clone.** The repository root *is* the plugin, so clone it and install that folder:
+**从 clone 装。** 仓库根目录**就是**插件，clone 下来直接装这个目录：
 
 ```sh
 git clone https://github.com/nepa77/dsh-plugin-balance-pet.git
 dsh plugin --profile desktop add /path/to/dsh-plugin-balance-pet
 ```
 
-Then **restart DSH** (see below). The package needs **no `npm install` and no build step**:
-the artwork ships inside it, the browser half is a hand-written bundle, and the only thing it
-writes at runtime is the optional API key at `<dshHome>/balance-pet/apikey.txt`.
+装完**重启 DSH**。浏览器半边会自行热加载，但插件的**宿主半边不会**——而且任何新增或改名的素材文件
+都会让旧宿主继续按旧的**文件名白名单**应答，而新的浏览器半边在请求新名字，那段时间桌宠会显示成灰色
+方块。用 `GET /dsh-plugin-balance-pet/doctor` 确认：`version` 必须等于你装的版本。
 
-## How long a balance fits on the tablet
+本包**不需要 `npm install`，也没有构建步骤**：素材就在包里，浏览器半边是手写 bundle，
+运行时唯一会写的东西是 `<dshHome>/balance-pet/apikey.txt`（可选的 API Key）。
 
-The readout auto-shrinks rather than clipping: `drawTablet` measures `"¥ " + amount` at the
-full sizes, then scales **both** down by `min(1, panelWidth × 0.9 ÷ measured)`.
+## 余额很长也放得下
 
-![Balances from 0.99 to 99999.99](docs/previews/digits.webp)
+读数是**自动缩放**的，不会被裁掉：`drawTablet` 先按原尺寸量 `"¥ " + 金额`，再按
+`min(1, panelWidth × 0.9 ÷ 量到的宽度)` 把**币种符号和数字一起**等比缩小。
 
-| Balance | Shrink | Digit height (of the 220-unit panel) |
+![从 0.99 到 99999.99 的显示](docs/previews/digits.webp)
+
+| 余额 | 缩放 | 数字高度（平板高 220 单位中的占比） |
 |---|---|---|
-| `¥0.99` | none | 106 (48 %) |
-| `¥12.34` | none | 106 (48 %) |
-| **`¥123.11`** | **93 %** | **98 (45 %)** |
-| `¥1234.56` | 80 % | 84 (38 %) |
-| `¥12345.67` | 70 % | 74 (34 %) |
-| `¥99999.99` | 70 % | 74 (34 %) |
+| `¥0.99` | 不缩 | 106（48 %） |
+| `¥12.34` | 不缩 | 106（48 %） |
+| **`¥123.11`** | **93 %** | **98（45 %）** |
+| `¥1234.56` | 80 % | 84（38 %） |
+| `¥12345.67` | 70 % | 74（34 %） |
+| `¥99999.99` | 70 % | 74（34 %） |
 
-**So yes — `123.11` displays fine.** It is 93 % of the full size, which is visually
-indistinguishable from `12.34`, and the full seven digits are inside the screen. Even
-`99999.99` stays complete and legible. Nothing is ever clipped: it trades size for
-completeness, which is the behaviour the desktop original shipped too.
+**所以 `123.11` 显示完全没问题。** 它缩到原尺寸的 93 %，和 `12.34` 肉眼几乎没区别，
+七位数字全部在屏幕内；`99999.99` 也照样完整可读。**永远不裁切**——它是拿大小换完整，
+桌面原版也是这个行为。
 
-## Licence
+## 许可
 
-The **plugin code** in this repository is MIT — see [LICENSE](LICENSE).
+本仓库的**插件代码**是 MIT——见 [LICENSE](LICENSE)。
 
-The **character artwork** under `assets/` is not mine and is not covered by that licence.
-It is third-party work, redistributed unmodified (apart from downscaling) with attribution
-to [VKmich16/VK-1](https://github.com/VKmich16/VK-1) and
-[@Andromedahk](https://github.com/Andromedahk). Their terms, the exact upstream path and git
-blob id of every image, and how to re-verify the copies are all in
-[THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md). Please read it before reusing the images
-yourself.
+`assets/` 下的**角色素材不是我的，也不在 MIT 覆盖范围内**。它们是第三方作品，除缩放外未经修改地再分发，
+署名给 [VKmich16/VK-1](https://github.com/VKmich16/VK-1) 与
+[@Andromedahk](https://github.com/Andromedahk)。它们各自的上游条款、每张图的确切上游路径与 git blob id、
+以及如何重新校验这些副本，都写在 [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md) 里。
+**你自己要再用这些图之前请先读它。**
 
-## Versioning
+## 版本规则
 
-`MAJOR.MINOR.PATCH`, and both halves must agree — `VERSION` in `src/index.js` and `version`
-in `package.json` — which a test enforces (`doctor.version` is compared against the manifest,
-not against a hard-coded string, so a bump cannot silently break the suite).
+`MAJOR.MINOR.PATCH`，且两半必须一致——`src/index.js` 里的 `VERSION` 和 `package.json` 里的 `version`——
+有测试强制这一点（`doctor.version` 是拿 manifest 比对的，不是和写死的字符串比，所以升版本不会悄悄弄坏测试）。
 
-| Change | Bump |
+| 改动 | 版本位 |
 |---|---|
-| A fix, a cleanup, a docs-only change | PATCH (`0.4.3`) |
-| A new menu entry, a new setting, new artwork | MINOR (`0.5.0`) |
-| A change to what the plugin *does* that a user must know about | MINOR, with a README section |
+| 修 bug、清理、只改文档 | PATCH（`0.4.4`） |
+| 新菜单项、新设置、新素材 | MINOR（`0.5.0`） |
+| 改变了插件的**行为**且用户需要知道 | MINOR，并在 README 里加一节 |
 
-After bumping, re-run the suite (`node test/balance-pet.test.mjs`) and, in the development
-workspace, re-pack with `python tools/pack-plugin.py` — which extracts the tarball it just
-wrote, syntax-checks both halves, and runs the bundled suite from the extracted copy. A
-package that cannot check itself is not worth shipping; that check is exactly how a
-forgotten version-bump in a test was caught during 0.3.1.
+升完版本号，重跑测试套件（`node test/balance-pet.test.mjs`）。在开发工作区里再用
+`python tools/pack-plugin.py` 重新打包——它会把自己刚写出的 tarball 解出来、对两半做语法检查、
+并用解出来的那份跑一遍自带测试。**不能自检的包不值得发布**；0.3.1 那次漏改版本号的测试断言，
+就是被这个检查当场抓到的。
 
-## Verify
+## 验证
 
 ```sh
-# 1. offline: money math, source modes, the animation model, geometry, routes, scope guards
-node packages/dsh-plugin-balance-pet/test/balance-pet.test.mjs
+# 1. 离线：金额运算、来源模式、动画模型、几何、路由、范围守卫
+node test/balance-pet.test.mjs
 
-# 2. offline: what the pet and its menu look like, using the browser's own drawing math
-python tools/render-pet-preview.py            # pet + a menu mock
-python tools/render-pet-preview.py --corners  # tablet-corner overlays on every artwork
+# 2. 离线：桌宠和菜单长什么样，用的是浏览器自己那套绘制运算
+python tools/render-pet-preview.py            # 桌宠 + 菜单示意
+python tools/render-pet-preview.py --corners  # 每张素材的平板角点叠加图
 
-# 3. live: seams, version freshness, guards, a real balance query, both source modes
+# 3. 实时：接口、版本是否最新、各项守卫、一次真实余额查询、两种来源模式
 powershell -NoProfile -ExecutionPolicy Bypass -File tools\verify-live.ps1
 ```
 
-The live script's first check compares the running Host's `version` against
-`package.json` and tells you to restart when they differ — that is the one failure that
-makes everything after it meaningless.
+实时脚本的第一条检查会拿运行中宿主的 `version` 和 `package.json` 比对，不一致就直接提示你去重启——
+因为不重启的话，后面每一条都是在报告旧代码。
 
-## Layout
+## 目录结构
 
 ```
-package.json            dsh.bundle.patch + dsh.client(platform web, immediately) + icon + meta
-cordis.patch.yml        the one profile row this bundle inserts
-icon.svg                the plugin-manager card icon
-locale/{zh,en}.json     display title and description
-src/index.js            Host half: the account seam, the key store, scheduling, the HTTP face, doctor()
-src/client.js           Client half: the pet canvas, the animation model, the menu, the dialogs, the sidebar entry
-assets/                 8 images, ~1.1 MB: 4 expressions (768²) + 4 appearances (1152×768)
-test/balance-pet.test.mjs   80 zero-dependency assertions
-skill/dsh-plugin-balance-pet/SKILL.md   the re-adaptation runbook
-compat/expected-surface.json  the recorded dependency surface
-docs/previews/          the rendered previews used above
+package.json            dsh.bundle.patch + dsh.client（platform web, immediately）+ icon + meta
+cordis.patch.yml        本 bundle 往 profile 里插入的那一行
+icon.svg                插件管理器卡片上的图标
+locale/{zh,en}.json     显示用的标题和描述
+src/index.js            宿主半边：账号接口、Key 存储、调度、HTTP 路由、doctor()
+src/client.js           浏览器半边：桌宠画布、动画模型、菜单、对话框、侧边栏入口
+assets/                 8 张图，约 1.1 MB：4 张表情（768²）+ 4 个外观（1152×768）
+test/balance-pet.test.mjs    80 项零依赖断言
+tools/make-assets.py         校验上游素材并重新生成 assets/
+tools/render-pet-preview.py  用浏览器那套常量离屏渲染文档配图
+tools/verify-live.ps1        对运行中的 DSH 做实时体检
+tools/check-readme-paths.py  检查本 README 引用的路径是否都存在（CI 用）
+skill/dsh-plugin-balance-pet/SKILL.md    重新适配 DSH 新版本的操作手册
+compat/expected-surface.json             记录下来的依赖面契约
+docs/previews/          上面用到的那些渲染图
+LICENSE                 MIT（只覆盖代码）
+THIRD-PARTY-NOTICES.md  角色素材的来源、上游条款与 blob id
+.github/workflows/test.yml   每次 push 自动跑测试
 ```
 
-## Notes and limits
+## 说明与限制
 
-- The artwork is derived from `VKmich16/VK-1`. Every source file was verified
-  **byte-identical** to the git blob that GitHub publishes for its path before use, by
-  `tools/make-assets.py`; THIRD-PARTY-NOTICES.md lists the ids it checks against.
-- `外观/sprite.png` (the wide framing) is verified but not shipped; see the framing section
-  above for why.
-- The D-16BVM art is 1024 × 1024, so 蓝色大肥鱼 gets a narrower, taller box than the
-  1536 × 1024 characters. The layout follows each artwork's own aspect ratio rather than
-  stretching it.
-- The tablet quad is measured per artwork: the D-16BVM numbers are that project's own
-  sprite constants, the wide ones are the macOS build's. `--corners` re-checks them.
-- The pet lives in the page, so it scrolls and scales with the Harness window rather than
-  floating over the OS desktop. That is the consequence of "a DSH plugin, not a standalone
-  app".
-- At 小 / 中 the tablet readout is small in the *wide* artworks; 蓝色大肥鱼's 1024² art
-  has a much larger tablet, so its readout is legible even at 中.
-- There is no 退出 entry: a plugin cannot quit DSH.
-- `src/client.js` requires exactly one platform module, `react`. A test fails if that
-  ever grows.
+- 素材来自 `VKmich16/VK-1`。每个源文件在使用前都由 `tools/make-assets.py` 校验过：与 GitHub 为该路径
+  发布的 git blob **逐字节一致**；比对用的 id 列在 THIRD-PARTY-NOTICES.md 里。
+- `外观/sprite.png`（宽构图）校验过但**不**随包发布，原因见上面的构图一节。
+- D-16BVM 素材是 1024 × 1024，所以蓝色大肥鱼的盒子比那三张 1536 × 1024 的更窄更高。布局跟随每张素材
+  自己的宽高比，而不是拉伸。
+- 平板坐标是按每张素材单独量的：D-16BVM 的数字来自那个项目自己的 sprite 常量，宽构图那套来自 macOS 版。
+  用 `--corners` 可以重新检查。
+- 桌宠活在页面里，所以它随 Harness 窗口滚动、缩放，而不是浮在操作系统桌面上。这是「DSH 插件而非独立应用」
+  的必然结果。
+- 在**宽构图**素材上，`小` / `中` 尺寸时平板读数偏小；蓝色大肥鱼的 1024² 素材平板大得多，
+  所以即使 `中` 也清晰可读。
+- **没有「退出」菜单项**：插件无法退出 DSH。
+- `src/client.js` 只依赖一个平台模块 `react`。一旦多出别的，测试会失败。
 
-MIT. Artwork and the original designs are from
-[VKmich16/VK-1](https://github.com/VKmich16/VK-1).
+MIT。素材与原始设计来自 [VKmich16/VK-1](https://github.com/VKmich16/VK-1)。

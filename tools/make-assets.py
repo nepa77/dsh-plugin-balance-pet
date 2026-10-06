@@ -103,7 +103,7 @@ def main():
         print("This tool only RE-GENERATES the artwork from the originals, and it verifies")
         print("each source file against its published git blob id while doing so. The")
         print("generated, verified images already ship inside the package:")
-        print("  packages/dsh-plugin-balance-pet/assets/")
+        print("  assets/")
         print("")
         print("Nothing is missing for installing or packing the plugin. Re-create the")
         print("source folder (the five 外观 files and the four 四个差分表情 files) only if")

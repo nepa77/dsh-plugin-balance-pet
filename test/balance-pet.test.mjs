@@ -1,7 +1,7 @@
 /**
  * dsh-plugin-balance-pet — offline test suite (zero dependencies).
  *
- *   node packages/dsh-plugin-balance-pet/test/balance-pet.test.mjs
+ *   node test/balance-pet.test.mjs
  *
  * It covers the things that can silently go wrong without a browser:
  *   1. the money math, the API-key parsing and the balance-source rules;
