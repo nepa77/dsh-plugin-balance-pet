@@ -1,0 +1,57 @@
+name: test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  suite:
+    name: node ${{ matrix.node }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ['20', '22']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+
+      # The suite is zero-dependency on purpose: no install step, so a green run means
+      # the plugin's own two files are sound rather than that npm resolved something.
+      - name: Run the plugin's own suite
+        run: node test/balance-pet.test.mjs
+
+      - name: Host half parses
+        run: node --check src/index.js
+
+      - name: Client half parses
+        run: node --check src/client.js
+
+  docs:
+    name: README paths
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      # Every file the README tells a reader to open or run must actually be here; the
+      # repository root is the package, so a stale path is easy to introduce and hard to
+      # notice.
+      - name: Every relative path in README.md resolves
+        run: python3 tools/check-readme-paths.py
+
+      - name: The manifest's `files` list has no missing entries
+        run: |
+          python3 - <<'PY'
+          import json, os
+          manifest = json.load(open('package.json'))
+          missing = [p for p in manifest['files'] if not os.path.exists(p)]
+          print('checked', len(manifest['files']), 'entries')
+          assert not missing, 'missing: %s' % missing
+          PY
