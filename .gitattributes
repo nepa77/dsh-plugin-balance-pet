@@ -1,0 +1,22 @@
+# Line endings: keep text as LF in the repository whatever the checkout does, so a
+# Windows clone and a macOS clone produce identical commits.
+* text=auto eol=lf
+
+# Images are binary; never diff, merge or mangle them.
+*.webp binary
+*.png binary
+*.jpg binary
+*.ico binary
+*.mp3 binary
+
+# A WebP is a single long line as far as git is concerned; do not try to be clever.
+*.webp -diff -merge -text
+*.png -diff -merge -text
+
+# Generated previews and packed artifacts are build output, not source.
+_previews/** linguist-generated
+dist/** linguist-generated
+
+# Keep the language stats honest: this is a JavaScript plugin, not a docs dump.
+*.md linguist-documentation
+docs/** linguist-documentation

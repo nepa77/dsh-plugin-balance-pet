@@ -1,0 +1,133 @@
+{
+  "$comment": [
+    "The dependency surface dsh-plugin-balance-pet relies on, recorded so a DSH upgrade is a checklist rather than an investigation.",
+    "Re-collect with the cordis_inspect_query calls named per entry, then diff against this file. `GET /dsh-plugin-balance-pet/doctor` reports the live verdict for every Host entry.",
+    "Recorded against: DSH desktop profile, Harness 0.2.0-rc.2, plugin 0.4.0, 2026-10-04."
+  ],
+  "adaptedFor": {
+    "product": "DeepSeek Harness",
+    "version": "0.2.0-rc.2",
+    "profile": "desktop",
+    "pluginVersion": "0.4.0",
+    "collectedAt": "2026-10-04"
+  },
+  "host": {
+    "deepseekAccount.getBalance": {
+      "level": "required",
+      "how": "cordis_inspect_query { platform: 'host', provider: 'Service', method: 'listService', input: { service: 'deepseekAccount' } }",
+      "shape": "getBalance(client: {version, locale, timezoneOffsetSeconds}) => Promise<null | {status:'ready', value: AccountWallet[], bonusWallets: AccountWallet[]} | {status:'failed'}>; AccountWallet = {currency: 'CNY'|'USD', balance: string}",
+      "usedBy": "src/index.js readBalance()",
+      "failureMode": "A missing method falls back to the API-key path and the doctor marks it failed; a `null` result means signed out and also falls back, unless 余额来源 is 仅 DSH 账号.",
+      "note": "Host-only. The browser cannot call it, which is why the Client half talks to this plugin's own HTTP routes. The pet's 余额来源 menu is what decides whether a key may substitute for it."
+    },
+    "webServer.register": {
+      "level": "required",
+      "how": "cordis_inspect_query { platform: 'host', provider: 'Service', method: 'listService', input: { service: 'webServer' } }",
+      "shape": "register({kind: 'exact'|'prefix', path: string, handler: (req: node:http.IncomingMessage, res: node:http.ServerResponse) => unknown}) => () => void",
+      "usedBy": "src/index.js registerRoutes()",
+      "failureMode": "Without it the browser half can never receive a balance and the doctor reports a required failure.",
+      "note": "Routing matches on the URL PATHNAME only (dsh-host-webserver matches `new URL(req.url).pathname` against the exact table first), so `?interval=`, `?source=` and `?report=` are safe on an `exact` route; `req.url` still carries the query for the handler to parse. The handler is also method-agnostic, which is how one `/apikey` route serves POST and DELETE."
+    },
+    "storageDomain": {
+      "level": "unused",
+      "note": "Deliberately not touched. The Host persists exactly one thing — the pet's own API key, as a plain 0600 file at <dshHome>/balance-pet/apikey.txt — and every preference lives in the browser."
+    }
+  },
+  "client": {
+    "slots service": {
+      "level": "required",
+      "how": "cordis_inspect_query { platform: 'client', provider: 'Service', method: 'listService' }",
+      "shape": "slots.inject(key, () => slots.register(options, Component))",
+      "usedBy": "src/client.js apply()",
+      "failureMode": "apply() logs a console error naming the doctor route and registers nothing."
+    },
+    "shell.overlay": {
+      "level": "required",
+      "how": "cordis_inspect_query { platform: 'client', provider: 'Slots', method: 'listSubTree', input: { root: 'shell.overlay' } }",
+      "kind": "list",
+      "registration": ["id (string, required)", "order (number, optional)", "label (string | () => string, optional)"],
+      "ownerProps": [],
+      "usedBy": "src/client.js — three occupants of the same click-through layer: balance-pet (order 900, the canvas), balance-pet.menu (901), balance-pet.dialog (902). 0.4.0 removed a fourth (balance-pet.restore, the floating 显示桌宠 pill)",
+      "failureMode": "The pet, its menu and its dialogs have nowhere to render. (The way back from 隐藏桌宠 lives in sidebar.footer.action, not here.)",
+      "note": "The layer is click-through by design ('entries opt back into pointer events'). This plugin keeps pointer-events: none on the pet and claims input in the window CAPTURE phase after an alpha test, so the transparent corners of the artwork do not block the app underneath. The menu panels, the restore pill and the dialog scrim opt back in with pointer-events: auto."
+    },
+    "sidebar.footer.action": {
+      "level": "required whenever the pet is hidden",
+      "how": "cordis_inspect_query { platform: 'client', provider: 'Slots', method: 'listSubTree', input: { root: 'sidebar.footer.action' } }",
+      "kind": "list",
+      "registration": ["id (string, required)", "order (number, optional)", "label (string | () => string, optional)"],
+      "ownerProps": ["wide: boolean (false = the 56px rail, in which case this component renders only its icon)"],
+      "usedBy": "src/client.js — one occupant, id 'balance-pet', rendered ONLY while the pet is hidden; clicking it brings the pet back. It is the only way back, so it also sets `pet.sidebarReady` on mount.",
+      "failureMode": "If it stops resolving, a hidden pet has no visible way back — which the plugin prevents rather than assumes: the menu's 隐藏桌宠 entry is disabled until this component has mounted. Fix the component; do not remove that guard. The console one-liner to clear the saved `hidden` flag is in the package README.",
+      "note": "Shipped occupants at record time: cordis-panel(0). 'Each action receives only the column state' per the catalog, which is why the component owns its own control."
+    },
+    "settings.section": {
+      "level": "deliberately unused as of 0.2.0",
+      "how": "cordis_inspect_query { platform: 'client', provider: 'Slots', method: 'listSubTree', input: { root: 'settings.section' } }",
+      "note": "0.1.x registered a 余额桌宠 page here. 0.2.0 removed it: the pet's right-click menu is the whole settings surface. A test asserts the string 'settings.section' never reappears in the bundle. Re-adding a page is a design change, not a port."
+    },
+    "locale service": {
+      "level": "optional",
+      "how": "cordis_inspect_query { platform: 'client', provider: 'Service', method: 'listService' }",
+      "shape": "ctx.get('locale').getSnapshot() | getLocale()",
+      "usedBy": "src/client.js localeId() / stringsFor()",
+      "failureMode": "Falls back to navigator.language, then document.documentElement.lang, then Chinese. No hard dependency, and no locale namespace is registered."
+    },
+    "platform module table": {
+      "level": "required",
+      "how": "source: @deepseek-ai/dsh-client-modules README — the shell seeds a frozen PLATFORM_MODULES table (React, Cordis, static UI libraries)",
+      "shape": "window.__ModuleLoader__.load({ id: '<package name>', factory: (require) => module.exports })",
+      "usedBy": "src/client.js top level",
+      "failureMode": "The bundle never registers and the slot stays empty.",
+      "note": "This bundle requires exactly one module, 'react' — no @deepseek-ai/dsh-client-* package, so no dsh.client.external edge and no build step. The menu's icons are inline SVG, not a UI-primitives import. A test asserts the require list stays ['react']."
+    }
+  },
+  "theme": {
+    "how": "cordis_inspect_query { platform: 'client', provider: 'Theme', method: 'listTokens' }",
+    "tokensUsed": [
+      "--dsw-alias-bg-overlay",
+      "--dsw-alias-bg-layer-1",
+      "--dsw-alias-border-l2",
+      "--dsw-alias-brand-primary",
+      "--dsw-alias-label-primary",
+      "--dsw-alias-label-secondary",
+      "--dsw-alias-state-error-primary",
+      "--dsw-alias-state-success-primary",
+      "--dsw-alias-state-warn-primary"
+    ],
+    "otherTokensUsedWithFallbacks": ["--dsw-alias-interactive-bg-hover"],
+    "failureMode": "Every use is `var(--token, <literal>)`, so a renamed token degrades to a readable colour instead of an invisible control. The canvas reads the same tokens through getComputedStyle with its own literals as fallbacks."
+  },
+  "artwork": {
+    "how": "python tools/render-pet-preview.py --corners, and python tools/make-assets.py for the integrity check",
+    "sources": {
+      "supplied folder — 外观/": "sprite-deepseek-offline.png (the 抱盆大肥鱼 pose, also the automatic pose while there is no reading), sprite-gpt.png, sprite-claude.png, sprite-gemini.png — all 1536x1024. sprite.png is verified but unused, because the default appearance is served by the differential set",
+      "supplied folder — 四个差分表情/": "expression_11..22.png (1024x1024): 开心 / 傲娇 / 冷脸 / 紧张"
+    },
+    "tabletQuad": {
+      "deepseek (1024x1024)": "tl (549.6, 706.2), tr (949.7, 642.0), bl (584.6, 924.3) — taken from the D-16BVM source's own sprite constants",
+      "wide (1536x1024)": "tl (1060, 699), tr (1413, 644), bl (1090, 889)",
+      "wide gemini": "tl (1065, 699), tr (1400, 646), bl (1095, 889)",
+      "note": "Only three corners are used; the fourth is implied by the affine map. Re-measure with --corners whenever an artwork is replaced — a wrong quad puts the readout off the tablet."
+    },
+    "shipped": {
+      "expression-11/12/21/22.webp": "768x768 — 开心 / 傲娇 / 冷脸 / 紧张",
+      "appearance-bowl.webp": "1152x768 — 抱盆大肥鱼, and the automatic pose while there is no reading",
+      "appearance-gpt/claude/gemini.webp": "1152x768 — the other three characters"
+    }
+  },
+  "localSeams": {
+    "own HTTP routes": {
+      "paths": [
+        "GET /dsh-plugin-balance-pet/doctor",
+        "GET /dsh-plugin-balance-pet/state?interval=<s>&source=<mode>&report=<json>",
+        "POST /dsh-plugin-balance-pet/refresh",
+        "POST /dsh-plugin-balance-pet/apikey  { key }",
+        "DELETE /dsh-plugin-balance-pet/apikey",
+        "GET /dsh-plugin-balance-pet/asset?file=<allowlisted name>"
+      ],
+      "guard": "Every JSON route requires the `x-dsh-plugin-balance-pet` request header; a cross-origin page cannot set a custom header without a CORS preflight, and no route answers one. The asset route is intentionally open (an <img>/CSS load cannot set headers, and the artwork is not a secret) but matches the file name against an allowlist after path.basename.",
+      "note": "The API key never travels back to the browser: /apikey responds with `stored`/`cleared` booleans and a fresh reading, and the reading carries only `apiKeyStored`. The key is written to a temp file with mode 0600 and renamed over the destination."
+    }
+  }
+}

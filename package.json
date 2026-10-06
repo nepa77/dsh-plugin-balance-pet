@@ -1,0 +1,48 @@
+{
+  "name": "dsh-plugin-balance-pet",
+  "version": "0.4.0",
+  "description": "DeepSeek Harness plugin: a frame-wide balance pet in the Harness Web UI. Its right-click menu is the settings surface (尺寸 / 五个外观 / 四个差分表情 / 吸附 / 余额来源 / API Key / 刷新间隔 / 隐藏); every cent spent flashes red, shakes and floats a -0.01 while she winces, and top-ups show immediately.",
+  "license": "MIT",
+  "private": true,
+  "main": "./src/index.js",
+  "icon": "./icon.svg",
+  "exports": {
+    ".": "./src/index.js",
+    "./client": "./src/client.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json",
+    "./locale/*.json": "./locale/*.json",
+    "./src/*": "./src/*"
+  },
+  "files": [
+    "src",
+    "assets",
+    "locale",
+    "skill",
+    "compat",
+    "docs",
+    "test",
+    "tools",
+    "cordis.patch.yml",
+    "icon.svg",
+    "README.md",
+    "LICENSE",
+    "THIRD-PARTY-NOTICES.md"
+  ],
+  "meta": {
+    "title": "余额桌宠",
+    "description": "在 Harness 界面里养一只看余额的桌宠：右键菜单就是设置面板，可切换尺寸、五个外观与四种差分表情，开关松手吸附；余额下降一分钱就红闪、震动并飘出 -0.01，充值立即显示。"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true
+    }
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

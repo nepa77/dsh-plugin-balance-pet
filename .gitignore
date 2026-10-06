@@ -1,0 +1,13 @@
+# Scratch and editor output. Nothing here belongs in the repository.
+_previews/
+.tmp/
+*.log
+*.tmp
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+.idea/
+.vscode/
