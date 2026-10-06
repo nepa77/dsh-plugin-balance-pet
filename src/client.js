@@ -24,10 +24,6 @@
  *   draining the pet automatically wears the pained expression and returns to the
  *   chosen one afterwards — the behaviour the D-16BVM widget documents.
  *
- * DELIBERATELY NOT PORTED
- *   The sound effect and its toggle, and the "测试一次扣费" / "演示连续扣费"
- *   rehearsals with every animation they drove. A test asserts neither returns.
- *
  * Seams used: the `slots` Client service, the `shell.overlay` list slot,
  * `ctx.locale` (optional), and this package's own Host routes. All are recorded in
  * `../compat/expected-surface.json`.

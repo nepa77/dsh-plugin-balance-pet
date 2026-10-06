@@ -81,10 +81,6 @@ path. Those ids were:
 they correspond to `dsh-balance-pet-macos/Resources/` and
 `大肥鱼桌宠改_D-16BVM/sprites/` upstream.)
 
-One further upstream file was verified but is deliberately **not** shipped: the original
-`hit.mp3` sound effect (blob `49b89a928765f66e67c2fe64fe9ef55b2e280611`). The sound was
-removed from this plugin by design, so no audio is redistributed here.
-
 The **tablet corner coordinates** in `src/client.js` (`ART_DEEPSEEK`, `ART_WIDE`,
 `ART_WIDE_GEMINI`) are also derived from upstream: the 1024 × 1024 numbers are the D-16BVM
 build's own sprite constants, and the 1536 × 1024 numbers are the macOS build's measured

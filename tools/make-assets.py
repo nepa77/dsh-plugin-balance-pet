@@ -62,16 +62,8 @@ EXPECTED = {
     "四个差分表情/expression_12.png": "01e4c9d3743d75c03964d5e35df49c512ea61b05",
     "四个差分表情/expression_21.png": "2576111000016fc08ef6080cbef49979e4eeb974",
     "四个差分表情/expression_22.png": "8192e78b4ead83d21915622cdd408ead2ce0cc4f",
-    # Verified, deliberately not shipped (see the module docstring).
-    "hit.mp3": None,
 }
 
-# The source folder has no audio; the macOS bundle is where hit.mp3 lives. It is
-# verified there and never copied.
-# The original sound effect lived inside the macOS app bundle. It is verified when that
-# bundle is reachable and skipped otherwise: it is never shipped either way.
-MACOS_RES = os.environ.get("DSH_PET_MACOS_BUNDLE_RESOURCES", "")
-HIT_MP3_BLOB = "49b89a928765f66e67c2fe64fe9ef55b2e280611"
 
 # output file -> (source path relative to SOURCE, target width)
 OUTPUTS = {
@@ -131,16 +123,6 @@ def main():
         print("%s %-42s %s" % ("OK  " if got == want else "DIFF", relative, got))
         if got != want:
             failures.append("%s: %s != %s" % (relative, got, want))
-
-    # The one file that comes from the macOS bundle, and is never shipped.
-    hit = os.path.join(MACOS_RES, "hit.mp3")
-    if os.path.exists(hit):
-        got = git_blob_sha1(hit)
-        print("%s %-42s %s  (verified, not shipped)" % ("OK  " if got == HIT_MP3_BLOB else "DIFF", "hit.mp3", got))
-        if got != HIT_MP3_BLOB:
-            failures.append("hit.mp3: %s != %s" % (got, HIT_MP3_BLOB))
-    else:
-        print("--  hit.mp3 not present, skipping (it is never shipped anyway)")
 
     if failures:
         print("\nINTEGRITY FAILURE:\n  " + "\n  ".join(failures))

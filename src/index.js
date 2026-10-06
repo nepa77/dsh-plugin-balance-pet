@@ -50,7 +50,7 @@ const path = require('node:path')
 
 const PACKAGE_NAME = 'dsh-plugin-balance-pet'
 const ROUTE_PREFIX = '/dsh-plugin-balance-pet'
-const VERSION = '0.4.1'
+const VERSION = '0.4.2'
 const ADAPTED_FOR = 'DSH desktop, Harness 0.2.0-rc.2'
 
 /**

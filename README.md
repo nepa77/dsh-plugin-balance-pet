@@ -111,8 +111,8 @@ appearances keep their tablet and show `--` instead, exactly as the desktop orig
 
 ## Two framings: 宽构图 vs the current one
 
-You asked what "宽构图" means. Both are the same character; the difference is how much of
-her is in the picture, and therefore how big the tablet — hence the balance — is:
+Both are the same character. The difference is how much of her is in the picture, and
+therefore how big the tablet — hence the balance — is:
 
 ![Wide versus square framing](docs/previews/wide-vs-square.webp)
 
@@ -129,10 +129,10 @@ all four images share one framing, so switching mood never makes her jump, and t
 tablet makes the readout legible at every size preset. That is why `外观/sprite.png` is
 verified by `tools/make-assets.py` but not shipped.
 
-The cost is the wide composition — no whale tail, and a narrower box. If you would rather
-have the wide framing as 蓝色大肥鱼's resting look, say so: the honest way to do it is to
-give up the 表情 axis for that appearance (one image, no differential switching), because
-mixing the two framings would make every mood change look like a jump cut.
+The cost is the wide composition: no whale tail, and a narrower box. Using the wide
+framing as 蓝色大肥鱼's resting look would mean giving up the 表情 axis for that appearance
+(one image, no differential switching), because mixing the two framings makes every mood
+change look like a jump cut.
 
 ## Behaviour
 
@@ -149,10 +149,7 @@ mixing the two framings would make every mood change look like a jump cut.
 
 ![A drop](docs/previews/hit-drop.webp)
 
-**Deliberately removed** from the desktop original: the `hit.mp3` sound effect and its
-toggle, and the *测试一次扣费* / *演示连续扣费* rehearsals with every animation they
-drove. The drop animation now runs only when the Host reports a real balance change. The
-test suite asserts neither can come back.
+The drop animation runs only when the Host reports a real balance change.
 
 ## Where the balance comes from
 
@@ -171,7 +168,8 @@ test suite asserts neither can come back.
 | **仅 API Key** | Never touches the account seam at all (asserted by a test and by the live verification script). |
 
 That choice exists precisely because "I saved an API key and nothing changed" is the
-confusing case: signed in with an account, the key is *not* the source unless you say so.
+confusing case: signed in with an account, the key is *not* the source unless 余额来源 is
+set to it.
 
 > **Why the key field is not redundant with DSH's own:** DSH keeps its key for *inference*
 > under Settings → Models. The pet only needs a credential when it must read a **balance**,
@@ -242,7 +240,7 @@ moving it later means reinstalling. Then:
 dsh plugin --profile desktop add /path/to/dsh-plugin-balance-pet
 
 # B) or install straight from the tarball
-dsh plugin --profile desktop add /path/to/dsh-plugin-balance-pet-0.4.1.tgz
+dsh plugin --profile desktop add /path/to/dsh-plugin-balance-pet-0.4.2.tgz
 ```
 
 In a DSH session the same thing is one line: *"install*
@@ -301,7 +299,7 @@ not against a hard-coded string, so a bump cannot silently break the suite).
 
 | Change | Bump |
 |---|---|
-| A fix, a cleanup, a docs-only change | PATCH (`0.4.2`) |
+| A fix, a cleanup, a docs-only change | PATCH (`0.4.3`) |
 | A new menu entry, a new setting, new artwork | MINOR (`0.5.0`) |
 | A change to what the plugin *does* that a user must know about | MINOR, with a README section |
 
@@ -347,12 +345,11 @@ docs/previews/          the rendered previews used above
 
 ## Notes and limits
 
-- The artwork is derived from `VKmich16/VK-1`, from the folder you supplied
-  (`五个外观和差分表情/`). All **9** files in it were verified **byte-identical** to GitHub
-  `HEAD` by git blob SHA-1 before use (`tools/make-assets.py`), as was `hit.mp3` from the
-  macOS bundle — verified and then deliberately **not** shipped.
+- The artwork is derived from `VKmich16/VK-1`. Every source file was verified
+  **byte-identical** to the git blob that GitHub publishes for its path before use, by
+  `tools/make-assets.py`; THIRD-PARTY-NOTICES.md lists the ids it checks against.
 - `外观/sprite.png` (the wide framing) is verified but not shipped; see the framing section
-  above for why, and say the word if you want it back.
+  above for why.
 - The D-16BVM art is 1024 × 1024, so 蓝色大肥鱼 gets a narrower, taller box than the
   1536 × 1024 characters. The layout follows each artwork's own aspect ratio rather than
   stretching it.

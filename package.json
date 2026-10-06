@@ -1,6 +1,6 @@
 {
   "name": "dsh-plugin-balance-pet",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "DeepSeek Harness plugin: a frame-wide balance pet in the Harness Web UI. Its right-click menu is the settings surface (尺寸 / 五个外观 / 四个差分表情 / 吸附 / 余额来源 / API Key / 刷新间隔 / 隐藏); every cent spent flashes red, shakes and floats a -0.01 while she winces, and top-ups show immediately.",
   "license": "MIT",
   "private": true,

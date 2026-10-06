@@ -9,7 +9,7 @@ A frame-wide balance pet for the Harness Web UI. The Host half reads the balance
 Client half draws the pet and owns the whole settings surface, which is the pet's
 right-click menu.
 
-**Version 0.4.1.** This package shares no code with any other bundle, so an upgrade only
+**Version 0.4.2.** This package shares no code with any other bundle, so an upgrade only
 ever affects the seams listed in `compat/expected-surface.json`.
 
 ## First response to any report
@@ -106,11 +106,11 @@ If the slot disappears, do **not** fall back to `document.body`: a plugin never 
 second application to the body. Pick another frame-wide list slot and accept the different
 placement.
 
-### 4. `settings.section` — deliberately NOT used since 0.2.0
+### 4. `settings.section` — deliberately NOT used
 
-The 0.1.x settings page was removed; the right-click menu is the settings surface. A test
-asserts the string `settings.section` never reappears in the bundle. If a future request
-needs a page again, that is a design change — re-read the slot's contract first
+The right-click menu is the settings surface. A test asserts the string `settings.section`
+never reappears in the bundle. If a page is ever wanted again, that is a design change —
+re-read the slot's contract first
 (`label` is `string | () => string`, owner props are `{ close }`).
 
 ### 5. `sidebar.footer.action` — Client, required whenever the pet is hidden
@@ -142,9 +142,8 @@ Each property has a test that fails loudly:
 | 蓝色大肥鱼 borrows the bowl pose whenever there is no reading | `resolveArt` | "resolveArt: 蓝色大肥鱼 falls back to the bowl pose with no reading" |
 | Hide and show are mutually exclusive, with no dead end | `buildSidebarAction` + the `sidebarReady` guard | "hiding and showing are mutually exclusive: never two controls at once" |
 
-**Do not reintroduce a sound or a "demo the animation" control.** They were removed
-deliberately; tests assert neither exists in either half. If a hand-test is ever needed,
-drive it through `/refresh` and a changed balance, never a client-side rehearsal.
+To hand-test the drop animation, drive it through `/refresh` and a changed balance. A
+client-side rehearsal is what the test suite exists to forbid.
 
 **Do not make the drop animation fire on a source change.** Switching 余额来源 changes
 *which account* the number comes from, so the difference between the two is not spending.
