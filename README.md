@@ -242,7 +242,7 @@ moving it later means reinstalling. Then:
 dsh plugin --profile desktop add /path/to/dsh-plugin-balance-pet
 
 # B) or install straight from the tarball
-dsh plugin --profile desktop add /path/to/dsh-plugin-balance-pet-0.4.0.tgz
+dsh plugin --profile desktop add /path/to/dsh-plugin-balance-pet-0.4.1.tgz
 ```
 
 In a DSH session the same thing is one line: *"install*
@@ -301,7 +301,7 @@ not against a hard-coded string, so a bump cannot silently break the suite).
 
 | Change | Bump |
 |---|---|
-| A fix, a cleanup, a docs-only change | PATCH (`0.4.1`) |
+| A fix, a cleanup, a docs-only change | PATCH (`0.4.2`) |
 | A new menu entry, a new setting, new artwork | MINOR (`0.5.0`) |
 | A change to what the plugin *does* that a user must know about | MINOR, with a README section |
 

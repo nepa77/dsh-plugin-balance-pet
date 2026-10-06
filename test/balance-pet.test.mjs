@@ -754,16 +754,26 @@ test('a stored preference round-trips and an unknown id is ignored', () => {
   assert.equal(prefs.customSide, internals.CUSTOM_MAX)
 })
 
-test('preferences written by the old 0.1.x bundle are migrated, not reset', () => {
+test('stored preferences are read back, and an unknown key falls back to the default', () => {
   clientStorage.set(
     'dsh-plugin-balance-pet/preferences',
-    JSON.stringify({ expression: 'gemini', sizeIndex: 2, snapOnRelease: true }),
+    JSON.stringify({ appearance: 'gemini', expression: '21', sizeMode: 'large', snapOnRelease: true }),
   )
   const prefs = internals.readPrefs()
-  // 0.1.x called the appearances 表情, so `expression` held an appearance id.
   assert.equal(prefs.appearance, 'gemini')
-  assert.equal(prefs.expression, '11', 'the new expression axis keeps its default')
-  assert.equal(prefs.sizeMode, 'large', 'sizeIndex 2 was 大 before 特大 was dropped')
+  assert.equal(prefs.expression, '21')
+  assert.equal(prefs.sizeMode, 'large')
+  assert.equal(prefs.snapOnRelease, true)
+
+  // A value this build does not know must not be adopted; the default stands.
+  clientStorage.set(
+    'dsh-plugin-balance-pet/preferences',
+    JSON.stringify({ appearance: 'nope', expression: 'nope', sizeMode: 'nope' }),
+  )
+  const fallback = internals.readPrefs()
+  assert.equal(fallback.appearance, 'deepseek')
+  assert.equal(fallback.expression, internals.FACE_HAPPY)
+  assert.equal(fallback.sizeMode, 'medium')
 })
 
 /* ------------------------------------------------------------------ *

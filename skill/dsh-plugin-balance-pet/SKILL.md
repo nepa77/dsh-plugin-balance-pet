@@ -9,7 +9,7 @@ A frame-wide balance pet for the Harness Web UI. The Host half reads the balance
 Client half draws the pet and owns the whole settings surface, which is the pet's
 right-click menu.
 
-**Version 0.4.0.** This package shares no code with any other bundle, so an upgrade only
+**Version 0.4.1.** This package shares no code with any other bundle, so an upgrade only
 ever affects the seams listed in `compat/expected-surface.json`.
 
 ## First response to any report

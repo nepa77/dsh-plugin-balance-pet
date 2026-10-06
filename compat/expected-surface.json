@@ -2,13 +2,13 @@
   "$comment": [
     "The dependency surface dsh-plugin-balance-pet relies on, recorded so a DSH upgrade is a checklist rather than an investigation.",
     "Re-collect with the cordis_inspect_query calls named per entry, then diff against this file. `GET /dsh-plugin-balance-pet/doctor` reports the live verdict for every Host entry.",
-    "Recorded against: DSH desktop profile, Harness 0.2.0-rc.2, plugin 0.4.0, 2026-10-04."
+    "Recorded against: DSH desktop profile, Harness 0.2.0-rc.2, plugin 0.4.1, 2026-10-04."
   ],
   "adaptedFor": {
     "product": "DeepSeek Harness",
     "version": "0.2.0-rc.2",
     "profile": "desktop",
-    "pluginVersion": "0.4.0",
+    "pluginVersion": "0.4.1",
     "collectedAt": "2026-10-04"
   },
   "host": {

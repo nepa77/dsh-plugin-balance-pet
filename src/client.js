@@ -540,19 +540,11 @@ window.__ModuleLoader__.load({
         if (typeof parsed.appearance === 'string' && APPEARANCE_BY_ID[parsed.appearance] !== undefined) {
           prefs.appearance = parsed.appearance
         }
-        // Migration: `expression` used to hold an appearance id (0.1.x called the
-        // appearances "表情"), and before that `sizeIndex` held a preset position.
-        // Both are absorbed so an upgrade never silently resets someone's pet.
         if (typeof parsed.expression === 'string' && EXPRESSION_BY_ID[parsed.expression] !== undefined) {
           prefs.expression = parsed.expression
-        } else if (typeof parsed.expression === 'string' && APPEARANCE_BY_ID[parsed.expression] !== undefined) {
-          prefs.appearance = parsed.expression
         }
         if (typeof parsed.sizeMode === 'string' && (SIZE_BY_ID[parsed.sizeMode] !== undefined || parsed.sizeMode === 'custom')) {
           prefs.sizeMode = parsed.sizeMode
-        } else if (typeof parsed.sizeIndex === 'number') {
-          var migrated = SIZE_PRESETS[clamp(Math.round(parsed.sizeIndex), 0, SIZE_PRESETS.length - 1)]
-          if (migrated !== undefined) prefs.sizeMode = migrated.id
         }
         if (typeof parsed.customSide === 'number' && isFinite(parsed.customSide)) {
           prefs.customSide = clamp(Math.round(parsed.customSide), CUSTOM_MIN, CUSTOM_MAX)
