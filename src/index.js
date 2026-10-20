@@ -50,8 +50,8 @@ const path = require('node:path')
 
 const PACKAGE_NAME = 'dsh-plugin-balance-pet'
 const ROUTE_PREFIX = '/dsh-plugin-balance-pet'
-const VERSION = '0.4.3'
-const ADAPTED_FOR = 'DSH desktop, Harness 0.2.0-rc.2'
+const VERSION = '0.4.4'
+const ADAPTED_FOR = 'DSH desktop, Harness 0.2.1-rc.2'
 
 /**
  * A custom header cannot be set by a cross-origin page without a CORS preflight,

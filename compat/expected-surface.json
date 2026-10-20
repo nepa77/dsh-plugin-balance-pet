@@ -2,15 +2,29 @@
   "$comment": [
     "The dependency surface dsh-plugin-balance-pet relies on, recorded so a DSH upgrade is a checklist rather than an investigation.",
     "Re-collect with the cordis_inspect_query calls named per entry, then diff against this file. `GET /dsh-plugin-balance-pet/doctor` reports the live verdict for every Host entry.",
-    "Recorded against: DSH desktop profile, Harness 0.2.0-rc.2, plugin 0.4.3, 2026-10-04."
+    "Recorded against: DSH desktop profile, Harness 0.2.1-rc.2, plugin 0.4.4, 2026-10-20. See verifiedAgainst for what each re-collection found."
   ],
   "adaptedFor": {
     "product": "DeepSeek Harness",
-    "version": "0.2.0-rc.2",
+    "version": "0.2.1-rc.2",
     "profile": "desktop",
-    "pluginVersion": "0.4.3",
-    "collectedAt": "2026-10-04"
+    "pluginVersion": "0.4.4",
+    "collectedAt": "2026-10-20"
   },
+  "verifiedAgainst": [
+    {
+      "harness": "0.2.0-rc.2",
+      "plugin": "0.4.3",
+      "on": "2026-10-04",
+      "result": "collected from the live inspector; every seam recorded below"
+    },
+    {
+      "harness": "0.2.1-rc.2",
+      "plugin": "0.4.4",
+      "on": "2026-10-20",
+      "result": "re-collected: NO seam changed shape, and the live script passes 31/31. The plugin needed no code change. Additions this plugin does not use: deepseekAccount gained getState / getProfile / getUnnotifiedBonuses / ackBonusNotified / startSignIn / cancelSignIn / signOut / watch / resolveToken / rejectToken / getPlatformSession / getDeviceIdentity; webServer gained getOrigin(); shell.overlay gained a workspace.toast child; both slots gained useRemoteAccess / useSessionAccess / useWorkspaceAccess in standardProps. If a future upgrade breaks something, diff those lists first."
+    }
+  ],
   "host": {
     "deepseekAccount.getBalance": {
       "level": "required",
@@ -18,7 +32,7 @@
       "shape": "getBalance(client: {version, locale, timezoneOffsetSeconds}) => Promise<null | {status:'ready', value: AccountWallet[], bonusWallets: AccountWallet[]} | {status:'failed'}>; AccountWallet = {currency: 'CNY'|'USD', balance: string}",
       "usedBy": "src/index.js readBalance()",
       "failureMode": "A missing method falls back to the API-key path and the doctor marks it failed; a `null` result means signed out and also falls back, unless 余额来源 is 仅 DSH 账号.",
-      "note": "Host-only. The browser cannot call it, which is why the Client half talks to this plugin's own HTTP routes. The pet's 余额来源 menu is what decides whether a key may substitute for it."
+      "note": "Host-only. The browser cannot call it, which is why the Client half talks to this plugin's own HTTP routes. The pet's 余额来源 menu is what decides whether a key may substitute for it. The service also exposes getState, getProfile, getUnnotifiedBonuses, ackBonusNotified, startSignIn, cancelSignIn, signOut, watch, resolveToken, rejectToken, getPlatformSession and getDeviceIdentity; getBalance is the only one this plugin calls, and it is the only reason the plugin needs the service at all."
     },
     "webServer.register": {
       "level": "required",
@@ -26,7 +40,7 @@
       "shape": "register({kind: 'exact'|'prefix', path: string, handler: (req: node:http.IncomingMessage, res: node:http.ServerResponse) => unknown}) => () => void",
       "usedBy": "src/index.js registerRoutes()",
       "failureMode": "Without it the browser half can never receive a balance and the doctor reports a required failure.",
-      "note": "Routing matches on the URL PATHNAME only (dsh-host-webserver matches `new URL(req.url).pathname` against the exact table first), so `?interval=`, `?source=` and `?report=` are safe on an `exact` route; `req.url` still carries the query for the handler to parse. The handler is also method-agnostic, which is how one `/apikey` route serves POST and DELETE."
+      "note": "Routing matches on the URL PATHNAME only (dsh-host-webserver matches `new URL(req.url).pathname` against the exact table first), so `?interval=`, `?source=` and `?report=` are safe on an `exact` route; `req.url` still carries the query for the handler to parse. The handler is also method-agnostic, which is how one `/apikey` route serves POST and DELETE. The service also exposes getOrigin(), registerUpgrade, registerFallback and the index-tap API; this plugin registers exact routes only and never needs the listener origin, because the browser learns the prefix from the page it is already on."
     },
     "storageDomain": {
       "level": "unused",
@@ -49,7 +63,7 @@
       "ownerProps": [],
       "usedBy": "src/client.js — three occupants of the same click-through layer: balance-pet (order 900, the canvas), balance-pet.menu (901), balance-pet.dialog (902). 0.4.0 removed a fourth (balance-pet.restore, the floating 显示桌宠 pill)",
       "failureMode": "The pet, its menu and its dialogs have nowhere to render. (The way back from 隐藏桌宠 lives in sidebar.footer.action, not here.)",
-      "note": "The layer is click-through by design ('entries opt back into pointer events'). This plugin keeps pointer-events: none on the pet and claims input in the window CAPTURE phase after an alpha test, so the transparent corners of the artwork do not block the app underneath. The menu panels, the restore pill and the dialog scrim opt back in with pointer-events: auto."
+      "note": "The layer is click-through by design ('entries opt back into pointer events'). This plugin keeps pointer-events: none on the pet and claims input in the window CAPTURE phase after an alpha test, so the transparent corners of the artwork do not block the app underneath. The menu panels and the dialog scrim opt back in with pointer-events: auto."
     },
     "sidebar.footer.action": {
       "level": "required whenever the pet is hidden",
@@ -59,7 +73,7 @@
       "ownerProps": ["wide: boolean (false = the 56px rail, in which case this component renders only its icon)"],
       "usedBy": "src/client.js — one occupant, id 'balance-pet', rendered ONLY while the pet is hidden; clicking it brings the pet back. It is the only way back, so it also sets `pet.sidebarReady` on mount.",
       "failureMode": "If it stops resolving, a hidden pet has no visible way back — which the plugin prevents rather than assumes: the menu's 隐藏桌宠 entry is disabled until this component has mounted. Fix the component; do not remove that guard. The console one-liner to clear the saved `hidden` flag is in the package README.",
-      "note": "Shipped occupants at record time: cordis-panel(0). 'Each action receives only the column state' per the catalog, which is why the component owns its own control."
+      "note": "Shipped occupants at record time: cordis-panel(0). 'Each action receives only the column state' per the catalog, which is why the component owns its own control. Since Harness 0.2.1-rc.2 the slot also projects useRemoteAccess, useSessionAccess and useWorkspaceAccess; this component does not call them, because it toggles one local preference and reads no session or workspace data."
     },
     "settings.section": {
       "level": "deliberately unused as of 0.2.0",

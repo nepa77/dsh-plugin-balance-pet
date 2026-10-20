@@ -32,7 +32,12 @@ param(
 $ErrorActionPreference = 'Stop'
 try { [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new($false) } catch { }
 
-if ([string]::IsNullOrWhiteSpace($BaseUrl)) { $BaseUrl = 'http://127.0.0.1:19387' }
+if ([string]::IsNullOrWhiteSpace($BaseUrl)) {
+  # DSH binds a different port on every launch, so a hard-coded default is always wrong
+  # sooner or later. Inside a DSH shell $env:DSH_WEB_URL is already set and is used above;
+  # outside one, pass -BaseUrl rather than letting this guess.
+  throw 'no base URL: run this from a DSH shell (so $env:DSH_WEB_URL is set), or pass -BaseUrl http://127.0.0.1:<port>'
+}
 $BaseUrl = $BaseUrl.TrimEnd('/')
 $prefix = $BaseUrl + $Route
 $header = @{ 'x-dsh-plugin-balance-pet' = '1' }

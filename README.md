@@ -250,7 +250,7 @@ dsh plugin --profile desktop add /path/to/dsh-plugin-balance-pet
 
 | 改动 | 版本位 |
 |---|---|
-| 修 bug、清理、只改文档 | PATCH（`0.4.4`） |
+| 修 bug、清理、只改文档 | PATCH（`0.4.5`） |
 | 新菜单项、新设置、新素材 | MINOR（`0.5.0`） |
 | 改变了插件的**行为**且用户需要知道 | MINOR，并在 README 里加一节 |
 
@@ -270,6 +270,7 @@ python tools/render-pet-preview.py            # 桌宠 + 菜单示意
 python tools/render-pet-preview.py --corners  # 每张素材的平板角点叠加图
 
 # 3. 实时：接口、版本是否最新、各项守卫、一次真实余额查询、两种来源模式
+#    DSH 每次启动换端口，脚本会自己读 $env:DSH_WEB_URL；不在 DSH 的 shell 里就用 -BaseUrl 传
 powershell -NoProfile -ExecutionPolicy Bypass -File tools\verify-live.ps1
 ```
 

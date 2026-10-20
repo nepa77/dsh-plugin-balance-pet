@@ -8,20 +8,21 @@ description: 当 DSH 余额桌宠出问题，或 DeepSeek Harness 升级之后�
 Harness 网页界面里的一只常驻余额桌宠。宿主半边负责读余额；浏览器半边负责画桌宠，
 并且掌握全部设置面板——也就是桌宠的右键菜单。
 
-**版本 0.4.3。** 本包与其他 bundle 不共享任何代码，所以升级只会影响
+**版本 0.4.4。** 本包与其他 bundle 不共享任何代码，所以升级只会影响
 `compat/expected-surface.json` 里列出的那些接口面。
 
 ## 收到任何问题报告时的第一步
 
 ```powershell
-curl.exe -s http://127.0.0.1:19387/dsh-plugin-balance-pet/doctor
+# DSH 每次启动都会换端口；在 DSH 的 shell 里 $env:DSH_WEB_URL 已经是它
+curl.exe -s "$env:DSH_WEB_URL/dsh-plugin-balance-pet/doctor"
 ```
 
 按这个顺序读：
 
 | 字段 | 含义 |
 |---|---|
-| `version` | **先拿它和 `package.json` 比对。** 插件的宿主半边不会热加载，所以版本过旧时，其他每个字段都是在描述**旧代码**。 |
+| `version` | **先拿它和 `package.json` 比对。** 插件的宿主半边不会热加载，所以版本过旧时，其他每个字段都是在描述**旧代码**。`adaptedFor` 则告诉你它适配到哪个 Harness 版本。 |
 | `ok` / `requiredFailures` | 有必需的宿主接口不见了。那个列表就是待办清单。 |
 | `checks[]` | 每个接口及其 `level`（`required` / `fallback` / `optional` / `info`）和 `detail`。 |
 | `reading` | 最后一次余额，含 `source`、`error`、`sourceMode`、`apiKeyStored`。 |
