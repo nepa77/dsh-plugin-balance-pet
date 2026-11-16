@@ -1617,7 +1617,15 @@ window.__ModuleLoader__.load({
           }
           return React.createElement(
             'div',
-            { className: 'dshbp-menu', 'data-pet-menu': '', style: style, role: 'menu' },
+            {
+              className: 'dshbp-menu',
+              // macOS Desktop: keep this panel clickable where it covers the window's
+              // drag row (Harness 0.2.2-rc.1 stopped auto-excluding overlays).
+              'data-window-drag-exclude': '',
+              'data-pet-menu': '',
+              style: style,
+              role: 'menu',
+            },
             rows,
           )
         }
@@ -1732,11 +1740,18 @@ window.__ModuleLoader__.load({
           'div',
           {
             className: 'dshbp-scrim',
+            // A click here closes the dialog; it must never be read as a window drag.
+            'data-window-drag-exclude': '',
             onPointerDown: function (event) {
               if (event.target === event.currentTarget) pet.store.closeDialog()
             },
           },
-          React.createElement('div', { className: 'dshbp-dialog', role: 'dialog', 'aria-modal': 'true' }, [
+          React.createElement('div', {
+            className: 'dshbp-dialog',
+            'data-window-drag-exclude': '',
+            role: 'dialog',
+            'aria-modal': 'true',
+          }, [
             React.createElement(
               'div',
               { key: 'title', className: 'dshbp-dialogTitle' },
@@ -2032,6 +2047,8 @@ window.__ModuleLoader__.load({
           {
             ref: containerRef,
             className: 'dshbp-root',
+            // The pet is grabbed with the pointer, so its box must never start a window drag.
+            'data-window-drag-exclude': '',
             role: 'img',
             style: {
               left: Math.min(pet.store.prefs.left, Math.max(0, viewport.width - initialBox.width)) + 'px',

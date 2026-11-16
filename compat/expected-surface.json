@@ -2,14 +2,14 @@
   "$comment": [
     "The dependency surface dsh-plugin-balance-pet relies on, recorded so a DSH upgrade is a checklist rather than an investigation.",
     "Re-collect with the cordis_inspect_query calls named per entry, then diff against this file. `GET /dsh-plugin-balance-pet/doctor` reports the live verdict for every Host entry.",
-    "Recorded against: DSH desktop profile, Harness 0.2.1-rc.2, plugin 0.4.4, 2026-10-20. See verifiedAgainst for what each re-collection found."
+    "Recorded against: DSH desktop profile, Harness 0.2.2-rc.3, plugin 0.4.5, 2026-11-16. See verifiedAgainst for what each re-collection found."
   ],
   "adaptedFor": {
     "product": "DeepSeek Harness",
-    "version": "0.2.1-rc.2",
+    "version": "0.2.2-rc.3",
     "profile": "desktop",
-    "pluginVersion": "0.4.4",
-    "collectedAt": "2026-10-20"
+    "pluginVersion": "0.4.5",
+    "collectedAt": "2026-11-16"
   },
   "verifiedAgainst": [
     {
@@ -23,6 +23,12 @@
       "plugin": "0.4.4",
       "on": "2026-10-20",
       "result": "re-collected: NO seam changed shape, and the live script passes 31/31. The plugin needed no code change. Additions this plugin does not use: deepseekAccount gained getState / getProfile / getUnnotifiedBonuses / ackBonusNotified / startSignIn / cancelSignIn / signOut / watch / resolveToken / rejectToken / getPlatformSession / getDeviceIdentity; webServer gained getOrigin(); shell.overlay gained a workspace.toast child; both slots gained useRemoteAccess / useSessionAccess / useWorkspaceAccess in standardProps. If a future upgrade breaks something, diff those lists first."
+    },
+    {
+      "harness": "0.2.2-rc.3",
+      "plugin": "0.4.5",
+      "on": "2026-11-16",
+      "result": "read every installed upgrade guide from v0.2.1-rc.2 through v0.2.2-rc.1. TWO items touch this plugin, both now applied: (a) v0.2.2-rc.1 window-drag-regions — macOS Desktop no longer auto-excludes arbitrary interactive controls, so the pet, menu, dialog and dialog scrim each declare data-window-drag-exclude; (b) v0.2.1-rc.2 node-24 — engines.node is now >=24.9 and CI runs Node 24 instead of 20 and 22. No other seam changed: deepseekAccount keeps its name and parameters (account-remote-provider), and css-anchored-menus plus context-menu-target do not apply because this plugin imports neither client-ui-primitives nor the context-menu package. New and unused: the Client Builtin provider now documents the dynamic-half globals (ctx, React, host.call, styles.insert, tagged console); this plugin still loads through window.__ModuleLoader__ and requires only react. shell.overlay and sidebar.footer.action gained useContextMenu in standardProps, which this plugin does not call."
     }
   ],
   "host": {

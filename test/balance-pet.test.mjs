@@ -1271,6 +1271,28 @@ test('the settings moved into the pet menu: no settings page is registered', () 
   )
 })
 
+test('every interactive overlay declares its own macOS window-drag region', () => {
+  // Harness 0.2.2-rc.1 stopped auto-excluding arbitrary interactive controls on macOS
+  // Desktop, so an overlay that must stay clickable where it covers the draggable header
+  // has to declare data-window-drag-exclude itself. All four surfaces are interactive.
+  const surfaces = [
+    ["className: 'dshbp-menu'", "the right-click menu panel"],
+    ["className: 'dshbp-scrim'", "the dialog scrim (a click closes the dialog)"],
+    ["className: 'dshbp-dialog'", "the dialog surface"],
+    ["className: 'dshbp-root'", "the pet itself (poined at, not dragged)"],
+  ]
+  for (const [anchor, what] of surfaces) {
+    const at = clientCode.indexOf(anchor)
+    assert.ok(at > 0, `${what} must exist`)
+    // The attribute sits in the same element literal, within a short distance.
+    const window = clientCode.slice(Math.max(0, at - 400), at + 400)
+    assert.ok(
+      window.includes("data-window-drag-exclude"),
+      `${what} must declare data-window-drag-exclude`,
+    )
+  }
+})
+
 test('hiding and showing are mutually exclusive: never two controls at once', () => {
   assert.ok(clientSource.includes("hide: '隐藏桌宠'"))
   assert.ok(clientSource.includes("show: '显示桌宠'"))

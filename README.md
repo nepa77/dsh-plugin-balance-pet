@@ -250,7 +250,7 @@ dsh plugin --profile desktop add /path/to/dsh-plugin-balance-pet
 
 | 改动 | 版本位 |
 |---|---|
-| 修 bug、清理、只改文档 | PATCH（`0.4.5`） |
+| 修 bug、清理、只改文档 | PATCH（`0.4.6`） |
 | 新菜单项、新设置、新素材 | MINOR（`0.5.0`） |
 | 改变了插件的**行为**且用户需要知道 | MINOR，并在 README 里加一节 |
 
@@ -311,6 +311,9 @@ THIRD-PARTY-NOTICES.md  角色素材的来源、上游条款与 blob id
   用 `--corners` 可以重新检查。
 - 桌宠活在页面里，所以它随 Harness 窗口滚动、缩放，而不是浮在操作系统桌面上。这是「DSH 插件而非独立应用」
   的必然结果。
+- 在 macOS Desktop 上，桌宠、菜单、对话框和遮罩都带 `data-window-drag-exclude`：从 Harness 0.2.2-rc.1
+  开始，浮层必须自己声明窗口区域，否则盖住可拖动页头时点击会变成拖动窗口。Windows 与普通 Web 不受影响。
+- 需要 **Node.js 24.9+**：DSH 从 0.2.1-rc.2 起不再支持 Node 22，而本插件只在 DSH 里运行。
 - 在**宽构图**素材上，`小` / `中` 尺寸时平板读数偏小；蓝色大肥鱼的 1024² 素材平板大得多，
   所以即使 `中` 也清晰可读。
 - **没有「退出」菜单项**：插件无法退出 DSH。

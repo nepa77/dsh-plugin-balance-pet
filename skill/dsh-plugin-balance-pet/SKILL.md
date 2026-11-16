@@ -8,7 +8,7 @@ description: 当 DSH 余额桌宠出问题，或 DeepSeek Harness 升级之后�
 Harness 网页界面里的一只常驻余额桌宠。宿主半边负责读余额；浏览器半边负责画桌宠，
 并且掌握全部设置面板——也就是桌宠的右键菜单。
 
-**版本 0.4.4。** 本包与其他 bundle 不共享任何代码，所以升级只会影响
+**版本 0.4.5。** 本包与其他 bundle 不共享任何代码，所以升级只会影响
 `compat/expected-surface.json` 里列出的那些接口面。
 
 ## 收到任何问题报告时的第一步
@@ -149,6 +149,13 @@ cordis_inspect_query { platform: 'client', provider: 'Slots', method: 'listSubTr
 | `TABLET_WIDTH` / `TABLET_HEIGHT` | 400 × 220 | 映射到实测平板四边形上的虚拟面板 |
 | `FACE_HAPPY` / `FACE_PAIN` | `'11'` / `'22'` | 充值瞬间和扣费时自动使用的表情 |
 | `PAIN_HOLD` | 1.0 秒 | 最后一分钱落地后 `紧张` 还要保持多久 |
+
+**`data-window-drag-exclude` 不能删。** 从 Harness 0.2.2-rc.1 起，macOS Desktop 只自动排除
+`data-window-drag` 行内的控件；桌宠、菜单、对话框和对话框遮罩各自声明了这个属性，否则它们盖住
+可拖动页头时，点击会被当成拖动窗口而不是操作插件。Windows 和普通 Web 不受影响。
+
+**`engines.node` 是 `>=24.9`。** DSH 从 0.2.1-rc.2 起不再支持 Node 22；本插件只在 DSH 里运行，
+所以 CI 也只跑 Node 24。
 
 `LAYOUT` 跟随每张素材自己的宽高比：盒子是素材本身加上 `0.09 · side` 的震动余量，
 所以 1:1 的素材会得到一个更窄的盒子，而不是被拉伸。改了那个余量就要同步更新几何测试。
